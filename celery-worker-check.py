@@ -14,7 +14,7 @@ ALERT_ON_MISSING_SERVERS    = True  # Whether to raise alert if expected servers
 
 
 if len(sys.argv) < 1:
-    raise Exception( 'You must pipe in output from `manage.py celery status` and specify at least one expected worker and count, for instance `manage.py celery status > celery-worker-check.py specialworker-4@serverA otherworker-5@serverB workername-2@serverC`' )
+    raise Exception( 'You must pipe in output from `manage.py celery status` and specify at least one expected worker and process count, for instance `manage.py celery status > celery-worker-check.py specialworker-4@serverA otherworker-5@serverB workername-2@serverC`' )
 
 def parse_worker_identifier( identifier ):
     ''' Extract meaning from a string like `workername-2@server`. '''
@@ -76,14 +76,14 @@ if ALERT_ON_UNEXPECTED_SERVERS:
         i = 0
         for x in found_servers[s]:
             i += len( found_servers[s][x] ) # Calculate impact of missing server
-        print 'Server %s is unexpectedly present, accounts for %s workers...' % ( s, i )
+        print 'Server %s is unexpectedly present, accounts for %s processes...' % ( s, i )
 
 if ALERT_ON_MISSING_SERVERS:
     for s in missing_servers:
         i = 0
         for x in expected_servers[s]:
             i += len( expected_servers[s][x] ) # Calculate impact of missing server
-        print 'Server %s was missing, accounts for %s missing workers...' % ( s, i )
+        print 'Server %s was missing, accounts for %s missing processes...' % ( s, i )
         
 for s in present_servers:
     missing_workers = set( expected_servers[s].keys() ).difference( set( found_servers[s].keys() ) )
@@ -93,12 +93,12 @@ for s in present_servers:
     if ALERT_ON_UNEXPECTED_WORKERS:
         for w in unexpected_workers:
             i = len( found_servers[s][w] )
-            print 'Worker %s@%s was unexpectedly present, accounts for %s workers...' % ( w, s, i )
+            print 'Worker %s@%s was unexpectedly present, accounts for %s processes...' % ( w, s, i )
 
     if ALERT_ON_MISSING_WORKERS:
         for w in missing_workers:
             i = len( expected_workers[w] )
-            print 'Worker %s@%s was missing, accounts for %s missing workers...' % ( w, s, i )
+            print 'Worker %s@%s was missing, accounts for %s missing processes...' % ( w, s, i )
 
     for w in present_workers:
         missing_worker_instances = set( sorted( expected_servers[s][w] ) ).difference( set( sorted( found_servers[s][w] ) ) )
@@ -106,8 +106,8 @@ for s in present_servers:
 
         if ALERT_ON_UNEXPECTED_WORKERS:
             for i in unexpected_worker_instances:
-                print 'Worker %s-%s@%s was unexpectedly present...' % ( w, i, s )
+                print 'Process %s-%s@%s was unexpectedly present...' % ( w, i, s )
 
         if ALERT_ON_MISSING_WORKERS:
             for i in missing_worker_instances:
-                print 'Worker %s-%s@%s was missing...' % ( w, i, s )
+                print 'Process %s-%s@%s was missing...' % ( w, i, s )
