@@ -28,10 +28,12 @@ Deploy it to a server which has `django-celery` installed and which is able to r
 It can be run like so:
 
 ```bash
-./manage.py celery status | ./celery-worker-check.py specialworker-4@serverA otherworker-5@serverB workername-2@serverC
+./manage.py celery status -t 10 | ./celery-worker-check.py specialworker-4@serverA otherworker-5@serverB workername-2@serverC
 ```
 
 In this example, the script will look for 4 instances of a worker named `specialworker` running on `serverA`. It will look for 5 instances of `otherworker` running on `serverB`, and it will look for 2 instances of `workername` running on `serverC`.
+
+> Note the `-t 10` argument, so that we'll wait 10 seconds to get a full set of responses from loaded workers.
 
 Output could look like this:
 
