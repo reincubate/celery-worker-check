@@ -3,7 +3,7 @@
 # Please note the LICENSE file accompanying this script.
 # See https://github.com/reincubate/celery-worker-check for more information.
 
-import sys
+import sys, re
 
 ALERT_ON_UNEXPECTED_WORKERS = True  # Whether to raise alert if unexpected workers are seen
 ALERT_ON_MISSING_WORKERS    = True  # Whether to raise alert if expected workers are missing
@@ -42,8 +42,13 @@ for l in sys.argv[1:]:
     for i in range(index):
         populate_status_dict( expected_servers, server, worker, i )
 
+# Clean stdin from any ANSI formatting
+ansi_escape = re.compile( r'\x1b[^m]*m' )
+
 # Prepare a hash of the servers we've found
 for l in sys.stdin:
+    l = ansi_escape.sub( '', l )
+
     # Skip blank and last summary line
     if l == '' or '@' not in l:
         continue
